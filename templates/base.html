@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+  <meta http-equiv="refresh" content="420">
+
+  <title>UNIXFOR Installations</title>
+  
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+   
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <style>
+    html, body, .container-fluid, #map {
+      box-sizing: border-box;
+    }
+    
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand navbar-dark bg-dark">
+    <a class="navbar-brand" href="{{ url_for('index') }}">© UNIXFOR S.A Installations</a>
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('index') }}" title="Map Home"><i class="fas fa-home"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('add_node') }}" title="Add Node"><i class="fas fa-map-marker"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('list') }}" title="List Nodes"><i class="fas fa-list"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('edit_settings') }}" title="Settings"><i class="fas fa-cog"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="fullscreenBtn" href="#" title="Fullscreen"><i class="fas fa-expand-arrows-alt"></i></a>
+      </li>
+    </ul>
+  </nav>
+  {% block content %}
+  {% endblock %}
+  <!-- Bootstrap JS -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      $('#toggleNavBtn').click(function() {
+        $('nav').toggleClass('hidden-nav');
+      });
+  
+      $('#fullscreenBtn').click(function() {
+        toggleFullscreen();
+      });
+  
+      function toggleFullscreen() {
+        var elem = document.documentElement;
+  
+        if (!document.fullscreenElement) {
+          if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+          } else if (elem.mozRequestFullScreen) { // Firefox
+            elem.mozRequestFullScreen();
+          } else if (elem.webkitRequestFullscreen) { // Chrome, Safari, Opera
+            elem.webkitRequestFullscreen();
+          } else if (elem.msRequestFullscreen) { // IE/Edge
+            elem.msRequestFullscreen();
+          }
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if (document.mozCancelFullScreen) { // Firefox
+            document.mozCancelFullScreen();
+          } else if (document.webkitExitFullscreen) { // Chrome, Safari, Opera
+            document.webkitExitFullscreen();
+          } else if (document.msExitFullscreen) { // IE/Edge
+            document.msExitFullscreen();
+          }
+        }
+      }
+    });
+  </script>
+  
+  <script>
+    $(document).ready(function() {
+      function setContainerHeight() {
+        var windowHeight = $(window).height();
+        $('#map').height(windowHeight);
+      }
+    
+      // Call the function on page load
+      setContainerHeight();
+    
+      // Recalculate the height on window resize
+      $(window).resize(function() {
+        setContainerHeight();
+      });
+    });
+    
+
+  </script>
+
+</body>
+</html>
+
+
+

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Edit Settings</h1>
+  <div class="container">
+  <form method="POST">
+    <div class="form-group">
+      <label for="map_latitude">Map Latitude</label>
+      <input type="text" id="map_latitude" name="map_latitude" class="form-control" value="{{ settings.map_latitude }}">
+    </div>
+    <div class="form-group">
+      <label for="map_longitude">Map Longitude</label>
+      <input type="text" id="map_longitude" name="map_longitude" class="form-control" value="{{ settings.map_longitude }}">
+    </div>
+    <div class="form-group">
+      <label for="zoom_level">Zoom Level</label>
+      <input type="number" id="zoom_level" name="zoom_level" class="form-control" value="{{ settings.zoom_level }}">
+    </div>
+    <div class="form-group">
+      <label for="x_image">X Image</label>
+      <input type="text" id="x_image" name="x_image" class="form-control" value="{{ settings.x_image }}">
+    </div>
+    <div class="form-group">
+      <label for="y_image">Y Image</label>
+      <input type="text" id="y_image" name="y_image" class="form-control" value="{{ settings.y_image }}">
+    </div>
+    <button type="submit" class="btn btn-primary">Update Settings</button>
+  </form>
+</div>
+{% endblock %}
