@@ -1,0 +1,52 @@
+<!-- import.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <h1>Import Nodes</h1>
+
+  <p>Download the import template:</p>
+  <a href="{{ url_for('static', filename='images/template/import-template.xlsx') }}" download>import-template.xlsx</a>
+  <br><br>
+
+  <form method="post" enctype="multipart/form-data" action="{{ url_for('import_nodes') }}">
+    <div class="form-group">
+      <label for="excel-file">Excel File:</label>
+      <input type="file" class="form-control-file" id="excel-file" name="excel-file" accept=".xlsx, .xls" required>
+    </div>
+    <div class="form-group">
+      <label for="image-file">Image File:</label>
+      <input type="file" class="form-control-file" id="image-file" name="image-file" accept="image/*" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Import</button>
+  </form>
+  <div id="loading-spinner" class="spinner-border text-primary d-none" role="status">
+    <br>
+    <span class="sr-only">Loading...</span>
+    <br>
+    <br>
+  </div>
+</div>
+<br>
+<br>
+
+<script>
+  document.querySelector('form').addEventListener('submit', function() {
+    document.getElementById('loading-spinner').classList.remove('d-none');
+  });
+
+  // Display flash messages using Toastr
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    toastr.options = {
+      "closeButton": true,
+      "progressBar": true,
+      "positionClass": "toast-bottom-right"
+    };
+    {% for message in messages %}
+    toastr.{{ message[1] }}("{{ message[0] }}");
+    {% endfor %}
+    {% endif %}
+  {% endwith %}
+</script>
+{% endblock %}

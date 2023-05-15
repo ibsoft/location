@@ -1,5 +1,8 @@
 from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for
+import shutil
+import tempfile
+import time
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, FloatField
 from wtforms.validators import InputRequired, URL
@@ -9,6 +12,9 @@ import configparser
 from werkzeug.utils import secure_filename
 import os
 import uuid
+import pandas as pd
+from io import BytesIO
+from tempfile import NamedTemporaryFile
 
 app = Flask(__name__)
 
@@ -266,6 +272,75 @@ def edit_settings():
     mysql.close()
     # Render the edit settings form template with the current values
     return render_template('edit_settings.html', settings=row)
+
+
+@app.route('/import', methods=['GET'])
+def import_form():
+    return render_template('import.html')
+
+
+@app.route('/import-nodes', methods=['POST'])
+def import_nodes():
+    check_mysql_connection()
+
+    # Check if the request contains the Excel file and image file
+    if 'excel-file' not in request.files or 'image-file' not in request.files:
+        flash('Excel file or image file not provided', 'error')
+        return redirect(url_for('import_form'))
+
+    excel_file = request.files['excel-file']
+    image_file = request.files['image-file']
+
+    # Check if the file names are empty
+    if excel_file.filename == '' or image_file.filename == '':
+        flash('Excel file or image file name is empty', 'error')
+        return redirect(url_for('import_form'))
+
+    # Read the Excel file and import data
+    try:
+        df = pd.read_excel(excel_file)
+
+        # Save the image file to a temporary buffer
+        temp_image = NamedTemporaryFile(delete=False, dir='static/images/tmp')
+        image_file.save(temp_image.name)
+        temp_image.close()  # Close the temporary file
+
+        for index, row in df.iterrows():
+            latitude = row['latitude']
+            longitude = row['longitude']
+            popup = row['popup']
+            image_filename = row['image_filename']
+
+            # Copy the image file multiple times with the provided filename
+            for _ in range(5):
+                new_image_path = os.path.join('static/images', secure_filename(image_filename))
+                shutil.copy2(temp_image.name, new_image_path)
+
+            # Insert the node data into the database
+            with mysql.cursor() as cursor:
+                sql = 'INSERT INTO nodes_tbl (latitude, longitude, popup, image_filename) VALUES (%s, %s, %s, %s)'
+                cursor.execute(sql, (latitude, longitude, popup, image_filename))
+
+        flash('Nodes imported successfully', 'success')
+    except Exception as e:
+        flash(f'Failed to import nodes: {str(e)}', 'error')
+
+    mysql.close()
+
+    # Remove the temporary image file with retry
+    max_retries = 5
+    retries = 0
+    while retries < max_retries:
+        try:
+            os.remove(temp_image.name)
+            break
+        except PermissionError:
+            time.sleep(0.1)  # Wait for a short delay before retrying
+            retries += 1
+
+    return redirect(url_for('import_form'))
+
+
 
 
 if __name__ == '__main__':
