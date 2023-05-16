@@ -111,9 +111,6 @@ def index():
         longitude = row['longitude']
         popup = row['popup']
         image = row['image_filename']
-        
-        print(set_x_image)
-        print(set_y_image)
 
         folium.Marker([latitude, longitude], popup=popup,
                       icon=folium.features.CustomIcon('static/images/' + image, icon_size=(set_x_image, set_y_image))).add_to(m)
